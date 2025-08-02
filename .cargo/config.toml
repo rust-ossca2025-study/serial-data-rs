@@ -1,3 +1,4 @@
 [alias]
 0 = "run --bin 00_intro"
 1 = "run --bin 01_encrypt"
+2 = "run --bin 02_plugin_drivers"
