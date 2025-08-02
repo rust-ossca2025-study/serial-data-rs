@@ -41,3 +41,7 @@
 - 기본적으로 모든 제네릭 파라미터엔 암묵적 Sized 제약이 붙습니다.
 - `T: ?Sized`라고 쓰면 “T가 Sized일 수도 있고 아닐 수도 있다”는 뜻으로, 그 암묵 제약을 해제함.
 - 현재 안정된 표준 문법에서 사용되는 ‘옵셔널 트레이트 바운드’는 ?Sized가 사실상 유일함.
+
+**[4] `src/bin`에 있는 파일은 cargo가 알아서 인식하고, `.cargo/config.toml`의 alias 섹션을 이용하면 cargo에 alias를 추가할 수 있다.**
+- `src/bin/00_intro.rs` 를 실행하고 싶다면 `cargo run --bin 00_intro` 를 입력하면 된다. 그럼 cargo가 알아서 `src/bin` 디렉토리를 순회하면서 `00_intro.rs`를 찾아서 실행한다.
+- 근데 매번 `cargo run --bin 00_intro`를 입력하기가 귀찮지 않은가? 그럴 때는, `.cargo/config.toml`의 alias에 `0 = "run --bin 00_intro"` 를 추가해주자. 이후에는 `cargo 0`만 입력하면 알아서 실행된다.
