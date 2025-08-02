@@ -28,13 +28,13 @@ fn main() {
     let customer_id = get_user_input(4);
 
     println!("Please input 8-digits Product ID: ");
-    let productid = get_user_input(8);
+    let product_id = get_user_input(8);
 
-    let plain_serial = format!("{}{}", customer_id, productid);
+    let plain_serial = format!("{}{}", customer_id, product_id);
     println!("Plain serial: {}", plain_serial);
 
-    let verify_customerid = &plain_serial[0..4];
-    let verify_productid = &plain_serial[4..12];
-    println!("Verify Customer ID: {}", verify_customerid);
-    println!("Verify Product ID: {}", verify_productid);
+    let verify_customer_id = &plain_serial[0..4];
+    let verify_product_id = &plain_serial[4..12];
+    println!("Verify Customer ID: {}", verify_customer_id);
+    println!("Verify Product ID: {}", verify_product_id);
 }
