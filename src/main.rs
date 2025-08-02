@@ -1,4 +1,5 @@
 use std::io::stdin;
+use magic_crypt::{new_magic_crypt, MagicCryptTrait};
 
 fn get_user_input(digit: usize) -> String {
     let mut s = String::new();
@@ -37,4 +38,8 @@ fn main() {
     let verify_product_id = &plain_serial[4..12];
     println!("Verify Customer ID: {}", verify_customer_id);
     println!("Verify Product ID: {}", verify_product_id);
+
+    let mc = new_magic_crypt!("key_is_rust", 256);
+    let base64 = mc.encrypt_str_to_base64(plain_serial);
+    println!("base64 serial: {}", base64);
 }
