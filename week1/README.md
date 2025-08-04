@@ -1,4 +1,6 @@
-# 연습문제
+# intro
+
+## 연습문제
 
 1. 혹시 시리얼 번호를 생성하는 프로그램을 만들어본 적이 없다면 프로그램을 디자인해보세요. 어떠한 요구사항이 있고, 어떤 설계로 프로그램을 만들 수 있을지 생각해보세요.
 
@@ -37,4 +39,55 @@ VFS의 추상화는 리눅스 사용자가 내부 데이터 형식에 대해 걱
 
 ```
 리눅스는 **"동적 확장 가능한 모놀리틱 커널"**입니다. 베이스 커널은 여전히 하나의 주소 공간에서 실행되는 모놀리틱 구조이지만, LKM 시스템을 통해 런타임에 기능을 동적으로 추가하거나 제거할 수 있습니다. 이는 마이크로커널의 유연성과 모놀리틱 커널의 성능을 모두 제공하는 혁신적인 설계입니다.
+```
+
+## 최종 결과물
+
+```rust
+use std::error::Error;
+
+type Validate = fn(&str) -> Result<String, Box<dyn Error>>;
+
+fn get_input(validate: Validate) -> Result<String, Box<dyn Error>> {
+    let buf = &mut String::new();
+    std::io::stdin().read_line(buf)?;
+
+    validate(buf.trim())?;
+
+    Ok(buf.trim_end().to_string())
+}
+
+fn main() {
+    println!("Please input 4-digits Customer ID: ");
+    let customer_id = get_input(|s| {
+        if s.len() != 4 || !s.chars().all(char::is_numeric) {
+            return Err("Customer ID must be exactly 4 digits long.".into());
+        }
+        Ok(s.to_string())
+    })
+    .expect("Failed to read Customer ID");
+
+    println!("Please input 8-alphanumeric Product ID: ");
+    let product_id = get_input(|s| {
+        if s.len() != 8 || !s.chars().all(|c| c.is_alphanumeric()) {
+            return Err("Product ID must be exactly 8 alphanumeric characters.".into());
+        }
+        Ok(s.to_string())
+    })
+    .expect("Failed to read Product ID");
+
+    let plain_serial = format!("{}{}", customer_id, product_id);
+    println!("Plain serial: {}", plain_serial);
+
+    let verify_customer_id = &plain_serial[0..4];
+    let verify_product_id = &plain_serial[4..12];
+    println!("Verify Customer ID: {}", verify_customer_id);
+    println!("Verify Product ID: {}", verify_product_id);
+}
+```
+
+# encrypt
+
+```rust
+cargo add magic-crypt
 ```
