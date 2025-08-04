@@ -30,5 +30,8 @@ fn validate_input(input: &str, expected_len: usize, name: &str) -> Result<(), St
     if input.len() != expected_len {
         return Err(format!("{name} must be {expected_len} digits"));
     }
+    if !input.chars().all(|c| c.is_alphanumeric()) {
+        return Err(format!("{name} must be alphabet or number"));
+    }
     Ok(())
 }
