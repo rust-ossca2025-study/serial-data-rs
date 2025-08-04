@@ -22,8 +22,34 @@ fn generate_serial(customer_id: &str, product_id: &str) -> String {
 }
 
 /// 유효성 검사 함수
-fn validate_input(customer_id: &str, product_id: &str) -> bool {
-    customer_id.len() == 4 && product_id.len() == 8
+fn validate_input(customer_id: &str, product_id: &str) -> Result<(), String> {
+    // 길이 검사
+    if customer_id.len() != 4 {
+        return Err(format!("Customer ID must be 4 digits, got {} digits", customer_id.len()));
+    }
+    if product_id.len() != 8 {
+        return Err(format!("Product ID must be 8 digits, got {} digits", product_id.len()));
+    }
+    
+    // 빈 문자열 검사
+    if customer_id.trim().is_empty() {
+        return Err("Customer ID cannot be empty or whitespace only".to_string());
+    }
+    if product_id.trim().is_empty() {
+        return Err("Product ID cannot be empty or whitespace only".to_string());
+    }
+    
+    // 특수문자 검사 (고객 ID는 숫자만 허용)
+    if !customer_id.chars().all(|c| c.is_ascii_digit()) {
+        return Err("Customer ID must contain only digits (0-9)".to_string());
+    }
+    
+    // 제품 ID는 알파벳과 숫자만 허용
+    if !product_id.chars().all(|c| c.is_ascii_alphanumeric()) {
+        return Err("Product ID must contain only alphanumeric characters (A-Z, a-z, 0-9)".to_string());
+    }
+    
+    Ok(())
 }
 
 fn main() {
@@ -36,11 +62,14 @@ fn main() {
     let product_id = get_user_input();
     
     // 입력 유효성 검사
-    if !validate_input(&customer_id, &product_id) {
-        println!("Error: Customer ID must be 4 digits, Product ID must be 8 digits.");
-        println!("Input values - Customer ID: {} ({} digits), Product ID: {} ({} digits)", 
-                 customer_id, customer_id.len(), product_id, product_id.len());
-        return;
+    match validate_input(&customer_id, &product_id) {
+        Ok(()) => {
+            // 유효성 검사 통과 -> 계속 진행
+        }
+        Err(e) => {
+            println!("Error: {}", e);
+            return;
+        }
     }
     
     // 시리얼 키 생성
