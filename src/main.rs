@@ -1,29 +1,38 @@
-use data::{CUSTOMERID_LENGTH, PRODUCTID_LENGTH, SerialData, decrypt_serialdata};
-use input::get_user_input;
+use crate::{
+    data::{CustomerID, CustomerType, ExpireDate, GenSerialData, ProductID},
+    encrypt::{decrypt_serial, encrypt_serial},
+};
 
 mod data;
+mod encrypt;
 mod input;
 
-fn get_input() -> SerialData {
-    let customerid = get_user_input("Customer ID", CUSTOMERID_LENGTH);
-    let productid = get_user_input("Product ID", PRODUCTID_LENGTH);
-
-    SerialData {
-        customerid,
-        productid,
+fn collect_data(items: &mut Vec<Box<dyn GenSerialData>>) {
+    for item in items.iter_mut() {
+        item.get_input_from_user();
     }
 }
 
 fn main() {
-    let input = get_input();
-    println!("Plain serial: {}", input.concat());
+    let product_id = ProductID::new(8);
+    let customer_id = CustomerID::new(4);
+    let expire_date = ExpireDate::new();
+    let customer_type = CustomerType::new();
 
-    let serial = input.encrypt();
+    let mut items: Vec<Box<dyn GenSerialData>> = vec![
+        Box::new(customer_id),
+        Box::new(product_id),
+        Box::new(expire_date),
+        Box::new(customer_type),
+    ];
+
+    collect_data(&mut items);
+
+    let serial = encrypt_serial(&mut items);
     println!("Encrypted serial: {serial}");
 
-    let dec = decrypt_serialdata(serial);
-    println!("Decrypted serial: {dec}");
-
-    let serialdata = SerialData::from_string(dec);
-    serialdata.print();
+    let decrypted_serial = decrypt_serial(serial, &mut items);
+    for serial_data in decrypted_serial {
+        println!("{}:{}", serial_data.name, serial_data.digit);
+    }
 }
