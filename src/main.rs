@@ -1,16 +1,5 @@
 use magic_crypt::{MagicCryptTrait, new_magic_crypt};
-use std::error::Error;
-
-type Validate = fn(&str) -> Result<String, Box<dyn Error>>;
-
-fn get_input(validate: Validate) -> Result<String, Box<dyn Error>> {
-    let buf = &mut String::new();
-    std::io::stdin().read_line(buf)?;
-
-    validate(buf.trim())?;
-
-    Ok(buf.trim_end().to_string())
-}
+use serial_data_rs::io::get_input;
 
 fn main() {
     println!("Please input 4-digits Customer ID: ");
@@ -18,7 +7,7 @@ fn main() {
         if s.len() != 4 || !s.chars().all(char::is_numeric) {
             return Err("Customer ID must be exactly 4 digits long.".into());
         }
-        Ok(s.to_string())
+        Ok(())
     })
     .expect("Failed to read Customer ID");
 
@@ -27,7 +16,7 @@ fn main() {
         if s.len() != 8 || !s.chars().all(|c| c.is_alphanumeric()) {
             return Err("Product ID must be exactly 8 alphanumeric characters.".into());
         }
-        Ok(s.to_string())
+        Ok(())
     })
     .expect("Failed to read Product ID");
 
