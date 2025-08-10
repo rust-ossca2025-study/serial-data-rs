@@ -2,76 +2,10 @@ use magic_crypt::{new_magic_crypt, MagicCryptTrait};
 
 mod domain;
 use crate::domain::traits::GenSerialData;
+use crate::domain::customer_id::CustomerID;
+use crate::domain::product_id::ProductID;
 
 
-pub struct CustomerID {
-    id: Option<String>,
-    digit: usize,
-    name: String,
-}
-
-impl CustomerID {
-    pub fn new(digit: usize) -> Self {
-        CustomerID {
-            name: "UserID".to_owned(),
-            digit,
-            id: None,
-        }
-    }
-}
-
-pub struct ProductID {
-    id: Option<String>,
-    digit: usize,
-    name: String,
-}
-
-impl ProductID {
-    pub fn new(digit: usize) -> Self {
-        ProductID {
-            name: "ProductID".to_owned(),
-            digit,
-            id: None,
-        }
-    }
-}
-
-
-impl GenSerialData for CustomerID {
-    fn get_length(&mut self) -> usize {
-        self.digit
-    }
-
-    fn get_rawdata(&self) -> String {
-        self.id.clone().unwrap()
-    }
-
-    fn get_name(&self) -> String {
-        self.name.clone()
-    }
-
-    fn put_rawdata(&mut self, data: String) {
-        self.id = Some(data);
-    }
-}
-
-impl GenSerialData for ProductID {
-    fn get_length(&mut self) -> usize {
-        self.digit
-    }
-
-    fn get_rawdata(&self) -> String {
-        self.id.clone().unwrap()
-    }
-
-    fn get_name(&self) -> String {
-        self.name.clone()
-    }
-
-    fn put_rawdata(&mut self, data: String) {
-        self.id = Some(data);
-    }
-}
 
 fn collect_data(items: &mut Vec<Box<dyn GenSerialData>>) {
     for item in items.iter_mut() {
