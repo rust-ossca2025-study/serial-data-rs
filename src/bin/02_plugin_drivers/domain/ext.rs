@@ -1,4 +1,4 @@
-use crate::domain::traits::GenSerialData;
+use super::traits::GenSerialData;
 
 pub trait GenSerialDataVecExt {
     fn collect_data(&mut self);
