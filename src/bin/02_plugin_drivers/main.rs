@@ -4,31 +4,15 @@ mod domain;
 use crate::domain::traits::GenSerialData;
 use crate::domain::customer_id::CustomerID;
 use crate::domain::product_id::ProductID;
-
-
-
-fn collect_data(items: &mut Vec<Box<dyn GenSerialData>>) {
-    for item in items.iter_mut() {
-        item.get_input_from_user();
-    }
-}
-
-fn generate_serial(items: &mut Vec<Box<dyn GenSerialData>>) -> String {
-    let mut data = String::new();
-    for item in items.iter_mut() {
-        data.push_str(&item.get_rawdata());
-    }
-    data
-}
-
+use crate::domain::ext::GenSerialDataVecExt;
 
 fn main() {
     let productid = ProductID::new(8);
     let customerid = CustomerID::new(4);
     let mut items: Vec<Box<dyn GenSerialData>> = vec![Box::new(customerid), Box::new(productid)];
 
-    collect_data(&mut items);
-    let plain_serial = generate_serial(&mut items);
+    items.collect_data();
+    let plain_serial = items.generate_serial();
     println!("Plain serial: {}", plain_serial);
 
     let mc = new_magic_crypt!("magickey", 256); // AES256 알고리즘을 사용하는 MagicCrypt256타입의 객체 생성
