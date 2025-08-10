@@ -16,7 +16,6 @@ impl ProductID {
     }
 }
 
-
 impl GenSerialData for ProductID {
     fn get_length(&mut self) -> usize {
         self.digit

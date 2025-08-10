@@ -1,10 +1,10 @@
-use magic_crypt::{new_magic_crypt, MagicCryptTrait};
-
 mod domain;
-use crate::domain::traits::GenSerialData;
-use crate::domain::customer_id::CustomerID;
-use crate::domain::product_id::ProductID;
-use crate::domain::ext::GenSerialDataVecExt;
+
+use magic_crypt::{MagicCryptTrait, new_magic_crypt};
+
+use crate::domain::{
+    customer_id::CustomerID, ext::GenSerialDataVecExt, product_id::ProductID, traits::GenSerialData,
+};
 
 fn main() {
     let productid = ProductID::new(8);

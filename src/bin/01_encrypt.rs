@@ -1,11 +1,9 @@
+use magic_crypt::{MagicCryptTrait, new_magic_crypt};
 use std::io::stdin;
-use magic_crypt::{new_magic_crypt, MagicCryptTrait};
 
 fn get_user_input(digit: usize) -> String {
     let mut s = String::new();
-    stdin()
-        .read_line(&mut s)
-        .expect("Failed to read line");
+    stdin().read_line(&mut s).expect("Failed to read line");
 
     let trimmed = s.trim();
 

@@ -1,4 +1,4 @@
-use std::io::{stdin, stdout, Write};
+use std::io::{Write, stdin, stdout};
 
 pub trait GenSerialData {
     fn get_input_from_user(&mut self) {
@@ -12,7 +12,6 @@ pub trait GenSerialData {
         assert_eq!(input.len(), self.get_length());
         self.put_rawdata(input);
     }
-
 
     fn verify(&mut self, data: &str) -> bool {
         self.get_length() == data.len() && self.get_rawdata() == data
