@@ -2,7 +2,7 @@
 ## 02_plugin_drivers
 ### 초기 구조 - 고추상화 (Trait 중심)
 #### trait란
-Rust에서 (반드시 구현되어야하는) 동죽 규격을 정의하는 도구\
+Rust에서 (반드시 구현되어야하는) 동작 규격을 정의하는 도구\
 (다른 언어에서 interface, abstract class와 비슷하다고 느낌)
 
 #### 초기 코드 분석
