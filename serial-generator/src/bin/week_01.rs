@@ -24,7 +24,7 @@ fn generate_serial(customerid : &str , productid : &str)-> String{
 }
 
 fn main() {
-    
+
     let customerid = get_user_input("please input 4-digits Customer ID", 4);
     let productid = get_user_input("please input 8-digits Product ID", 8);
 
@@ -57,6 +57,5 @@ mod tests {
         let decrypted = mc.decrypt_base64_to_string(encrypted).unwrap();
         assert_eq!(original,decrypted);
     }
-
 
 }
