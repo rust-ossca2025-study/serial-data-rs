@@ -64,4 +64,3 @@ fn get_user_input(prompt: &str , expected_len :usize) -> String {
 
 커널 모듈을 통해 리눅스는 모놀리틱 커널 구조이면서도 유연하게 하드웨어 드라이브를 관리할 수 있음
 
-
