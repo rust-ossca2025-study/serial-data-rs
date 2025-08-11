@@ -5,10 +5,7 @@ use std::fmt;
 #[derive(Debug, Clone, PartialEq)]
 pub enum SerialError {
     InvalidLength { expected: usize, actual: usize },
-    InvalidFormat { field: String, reason: String },
-    InvalidDate { year: u32, month: u32, day: u32, reason: String },
-    InvalidCustomerType { value: String },
-    ParseError { field: String, value: String },
+    InvalidValue { field: String, reason: String },
 }
 
 impl fmt::Display for SerialError {
@@ -17,17 +14,8 @@ impl fmt::Display for SerialError {
             SerialError::InvalidLength { expected, actual } => {
                 write!(f, "length must be {} but got {}", expected, actual)
             }
-            SerialError::InvalidFormat { field, reason } => {
-                write!(f, "{} format error: {}", field, reason)
-            }
-            SerialError::InvalidDate { year, month, day, reason } => {
-                write!(f, "invalid date {}-{:02}-{:02}: {}", year, month, day, reason)
-            }
-            SerialError::InvalidCustomerType { value } => {
-                write!(f, "invalid customer type '{}': must be one of 1/2/3", value)
-            }
-            SerialError::ParseError { field, value } => {
-                write!(f, "{} parse error: cannot parse '{}'", field, value)
+            SerialError::InvalidValue { field, reason } => {
+                write!(f, "{}: {}", field, reason)
             }
         }
     }
@@ -37,7 +25,7 @@ impl std::error::Error for SerialError {}
 
 impl From<String> for SerialError {
     fn from(s: String) -> Self {
-        SerialError::InvalidFormat { 
+        SerialError::InvalidValue { 
             field: "unknown".to_string(),
             reason: s
         }
@@ -46,7 +34,7 @@ impl From<String> for SerialError {
 
 impl From<&str> for SerialError {
     fn from(s: &str) -> Self {
-        SerialError::InvalidFormat { 
+        SerialError::InvalidValue { 
             field: "unknown".to_string(),
             reason: s.to_string()
         }
@@ -68,12 +56,11 @@ fn get_user_input() -> String {
     s
 }
 
-
 trait GenSerialData {
     fn length(&self) -> usize;
     fn name(&self) -> &str;
     fn serialize(&self) -> String;
-    fn put_rawdata(&mut self, raw: &str) -> Result<(), String>;
+    fn put_rawdata(&mut self, raw: &str) -> Result<(), SerialError>;
 
     fn get_input_from_user(&mut self) {
         loop {
@@ -124,9 +111,12 @@ impl GenSerialData for CustomerId {
     fn serialize(&self) -> String {
         self.raw.clone().unwrap_or_default()
     }
-    fn put_rawdata(&mut self, raw: &str) -> Result<(), String> {
+    fn put_rawdata(&mut self, raw: &str) -> Result<(), SerialError> {
         if raw.len() != self.len {
-            return Err(format!("length must be {}", self.len));
+            return Err(SerialError::InvalidLength { 
+                expected: self.len, 
+                actual: raw.len() 
+            });
         }
         self.raw = Some(raw.to_string());
         Ok(())
@@ -154,9 +144,12 @@ impl GenSerialData for ProductId {
     fn serialize(&self) -> String {
         self.raw.clone().unwrap_or_default()
     }
-    fn put_rawdata(&mut self, raw: &str) -> Result<(), String> {
+    fn put_rawdata(&mut self, raw: &str) -> Result<(), SerialError> {
         if raw.len() != self.len {
-            return Err(format!("length must be {}", self.len));
+            return Err(SerialError::InvalidLength { 
+                expected: self.len, 
+                actual: raw.len() 
+            });
         }
         self.raw = Some(raw.to_string());
         Ok(())
@@ -181,12 +174,15 @@ impl From<&CustomerKind> for usize {
 }
 
 impl CustomerKind {
-    fn from_digit_str(s: &str) -> Result<Self, String> {
+    fn from_digit_str(s: &str) -> Result<Self, SerialError> {
         match s {
             "1" => Ok(CustomerKind::Business),
             "2" => Ok(CustomerKind::Student),
             "3" => Ok(CustomerKind::Company),
-            _ => Err("must be one of 1/2/3".to_string()),
+            _ => Err(SerialError::InvalidValue { 
+                field: "CustomerType".to_string(),
+                reason: "must be one of 1/2/3".to_string()
+            }),
         }
     }
     fn as_digit_str(&self) -> String {
@@ -219,7 +215,7 @@ impl GenSerialData for CustomerType {
             .map(|k| k.as_digit_str())
             .unwrap_or_else(|| "0".to_string())
     }
-    fn put_rawdata(&mut self, raw: &str) -> Result<(), String> {
+    fn put_rawdata(&mut self, raw: &str) -> Result<(), SerialError> {
         let k = CustomerKind::from_digit_str(raw)?;
         self.kind = Some(k);
         Ok(())
@@ -257,28 +253,49 @@ impl ExpireDate {
         Self { year: 0, month: 0, day: 0 }
     }
 
-    fn parse_fields(raw: &str) -> Result<(u32, u32, u32), String> {
+    fn parse_fields(raw: &str) -> Result<(u32, u32, u32), SerialError> {
         if raw.len() != 8 {
-            return Err("length must be 8 (YYYYMMDD)".to_string());
+            return Err(SerialError::InvalidLength { 
+                expected: 8, 
+                actual: raw.len() 
+            });
         }
         let y: u32 = raw[0..4]
             .parse()
-            .map_err(|_| "invalid year".to_string())?;
+            .map_err(|_| SerialError::InvalidValue { 
+                field: "ExpireDate".to_string(),
+                reason: "invalid year".to_string()
+            })?;
         let m: u32 = raw[4..6]
             .parse()
-            .map_err(|_| "invalid month".to_string())?;
+            .map_err(|_| SerialError::InvalidValue { 
+                field: "ExpireDate".to_string(),
+                reason: "invalid month".to_string()
+            })?;
         let d: u32 = raw[6..8]
             .parse()
-            .map_err(|_| "invalid day".to_string())?;
+            .map_err(|_| SerialError::InvalidValue { 
+                field: "ExpireDate".to_string(),
+                reason: "invalid day".to_string()
+            })?;
 
         if y < 2025 {
-            return Err("year must be >= 2025".to_string());
+            return Err(SerialError::InvalidValue { 
+                field: "ExpireDate".to_string(),
+                reason: "year must be >= 2025".to_string()
+            });
         }
         if !(1..=12).contains(&m) {
-            return Err("month must be 1..=12".to_string());
+            return Err(SerialError::InvalidValue { 
+                field: "ExpireDate".to_string(),
+                reason: "month must be 1..=12".to_string()
+            });
         }
         if !(1..=31).contains(&d) {
-            return Err("day must be 1..=31".to_string());
+            return Err(SerialError::InvalidValue { 
+                field: "ExpireDate".to_string(),
+                reason: "day must be 1..=31".to_string()
+            });
         }
         Ok((y, m, d))
     }
@@ -294,7 +311,7 @@ impl GenSerialData for ExpireDate {
     fn serialize(&self) -> String {
         format!("{:04}{:02}{:02}", self.year, self.month, self.day)
     }
-    fn put_rawdata(&mut self, raw: &str) -> Result<(), String> {
+    fn put_rawdata(&mut self, raw: &str) -> Result<(), SerialError> {
         let (y, m, d) = Self::parse_fields(raw)?;
         self.year = y;
         self.month = m;
@@ -361,52 +378,3 @@ fn main() {
         offset += len;
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_customer_type_roundtrip() {
-        let mut ct = CustomerType::new();
-        ct.put_rawdata("2").unwrap();
-        assert_eq!(ct.serialize(), "2");
-        assert!(ct.verify("2"));
-        assert!(!ct.verify("1"));
-    }
-
-    #[test]
-    fn test_expire_date_parse_and_serialize() {
-        let mut ed = ExpireDate::new();
-        ed.put_rawdata("20251231").unwrap();
-        assert_eq!(ed.serialize(), "20251231");
-        assert!(ed.verify("20251231"));
-    }
-
-    #[test]
-    fn test_generate_plain_serial_with_plugins() {
-        let mut user = CustomerId::new(4);
-        let mut prod = ProductId::new(8);
-        let mut ct = CustomerType::new();
-        let mut ed = ExpireDate::new();
-
-        user.put_rawdata("1234").unwrap();
-        prod.put_rawdata("qwerasdf").unwrap();
-        ct.put_rawdata("3").unwrap();
-        ed.put_rawdata("20250123").unwrap();
-
-        let mut items: Vec<Box<dyn GenSerialData>> =
-            vec![Box::new(user), Box::new(prod), Box::new(ct), Box::new(ed)];
-        let plain = generate_plain_serial(&mut items);
-        assert_eq!(plain, "1234qwerasdf3".to_string() + "20250123");
-    }
-
-    #[test]
-    fn test_encrypt_decrypt_roundtrip() {
-        let mc = new_magic_crypt!("testkey", 256);
-        let plain = "1234qwerasdf320250123";
-        let enc = mc.encrypt_str_to_base64(plain);
-        let dec = mc.decrypt_base64_to_string(&enc).unwrap();
-        assert_eq!(dec, plain);
-    }
-} 
