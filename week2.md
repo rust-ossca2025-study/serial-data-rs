@@ -52,7 +52,7 @@ CustomerID와 ProductID, 2개의 입력 데이터를 만들어봤습니다. 그 
 
 ```rust
 fn get_rawdata(&self) -> String {
-    if let Some(kind) = &self.customer_type {
+    if let Some(ref kind) = &self.customer_type {
         return format!("{}", usize::from((kind)));
     } else {
         return "0".to_owned();
@@ -147,7 +147,7 @@ fn main() {
 
 - Copy 는 암시적으로 데이터 복사를 자동으로 수행해줌
 - Copy 는 단순히 메모리 복사
-- Primitive 타입은 Copy 트레이트를 구현
+- Primitive 타입은 Copy trait 를 구현
 - Custom Type 이 Copy 구현하고 싶은 경우, 하위 모든 필드가 Copy trait 을 구현해야 함
 
 ```rs
@@ -157,6 +157,8 @@ struct SomeType {
     b: i32,
 }
 ```
+
+### Clone
 
 - Clone 은 명시적으로 데이터 복사를 수행
 - resource 소비 큼
@@ -196,3 +198,43 @@ impl Clone for Database {
     }
 }
 ```
+
+# Review
+
+## 동희님
+
+- [no-more-mod.rs](https://doc.rust-lang.org/edition-guide/rust-2018/path-changes.html#no-more-modrs)
+- extension
+  - 외부 crate 를 건드리지 않고 새 기능 추가
+  - 충돌 방지: 서로 다른 crate의 같은 이름 extension이 있어도 import한 것만 사용됨
+
+## 현민님
+
+1. 민호님의 thiserror 언급
+2.
+
+```rust
+Result<String, Box<dyn Error>>
+```
+
+3. 빠른 prototyping: [anyhow](https://github.com/dtolnay/anyhow)
+
+```toml
+# Cargo.toml
+[dependencies]
+anyhow = "1.0"
+```
+
+```rs
+use anyhow::Result;
+
+fn get_cluster_info() -> Result<ClusterMap> {
+    let config = std::fs::read_to_string("cluster.json")?;
+    let map: ClusterMap = serde_json::from_str(&config)?;
+    Ok(map)
+}
+```
+
+## 효주님
+
+- fmt 가 수동으로 되야 하는 상황이고 vscode + rust analyzer 사용 중이라면 format on save 사용
