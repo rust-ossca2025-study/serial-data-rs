@@ -50,6 +50,16 @@ CustomerID와 ProductID, 2개의 입력 데이터를 만들어봤습니다. 그 
 
 - get_rawdata 메소드의 구현에서 if let Some(kind) = self.customer_type와 같이 소유권이 이동되도록 구현을 바꿔보세요. 어디에서 어떤 에러가 나는지 확인해보고 그 의미를 생각해보세요.
 
+```rust
+fn get_rawdata(&self) -> String {
+    if let Some(kind) = &self.customer_type {
+        return format!("{}", usize::from((kind)));
+    } else {
+        return "0".to_owned();
+    }
+}
+```
+
 ### Issue
 
 1. `kind` 에 값 할당 시도
