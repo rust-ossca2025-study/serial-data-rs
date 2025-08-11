@@ -26,31 +26,22 @@ fn make_serial_data(user_len: usize, product_len: usize) -> SerialData {
     }
 }
 
-fn prompt_inputs(data: &mut SerialData) {
-    // UserID
+fn prompt_fixed(label: &str, len: usize) -> String {
     loop {
-        println!("Please input {}-digits for UserID:", data.user_len);
-        let input = get_user_input();
-        if input.len() == data.user_len {
-            data.customer_id = input;
-            break;
-        } else {
-            println!("Invalid length: expected {}, got {}", data.user_len, input.len());
+        println!("Please input {}-digits for {}:", len, label);
+        let s = get_user_input();
+        if s.len() == len {
+            return s;
         }
-    }
-
-    // ProductID
-    loop {
-        println!("Please input {}-digits for ProductID:", data.product_len);
-        let input = get_user_input();
-        if input.len() == data.product_len {
-            data.product_id = input;
-            break;
-        } else {
-            println!("Invalid length: expected {}, got {}", data.product_len, input.len());
-        }
+        println!("Invalid length: expected {}, got {}", len, s.len());
     }
 }
+
+fn prompt_inputs(data: &mut SerialData) {
+    data.customer_id = prompt_fixed("UserID", data.user_len);
+    data.product_id = prompt_fixed("ProductID", data.product_len);
+}
+
 
 fn plain_serial(data: &SerialData) -> String {
     let mut out = String::with_capacity(data.user_len + data.product_len);
