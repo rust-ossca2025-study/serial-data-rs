@@ -30,7 +30,7 @@ Rust에서 (반드시 구현되어야하는) 동죽 규격을 정의하는 도�
 다른 모듈화가 된 것들을 보고 입력 검증·형식 오류·길이 불일치와 같은 로직도 한 곳에 모아야겠다는 생각이 들어서 SerialError 타입을 추가했다. 지금 있는 오류 패턴에 맞게
 - SerialError enum
     - InvalidLength { expected, actual }
-    - InvalidValue { field, reason }\
+    - InvalidValue { field, reason }
 
 크게 2개를 만들었다. 원래 기존에는
 - InvalidFormat { field: String, reason: String },
@@ -39,3 +39,12 @@ Rust에서 (반드시 구현되어야하는) 동죽 규격을 정의하는 도�
 - ParseError { field: String, value: String }
 
 이렇게 InvalidValue 대신 4개가 있었는데 이게 거의 date를 위한 것들이여서 그냥 하나로 묶어서 InvalidValue로 만들어버렸다.
+
+#### \#[derive(..)]
+구조체나 열거형에서 반복적으로 구현해야 하는 표준 기능들을 컴파일러가 자동으로 만들어 주는 기능이다. 예를 들어 값 비교, 복제, 디버깅 출력처럼 자주 쓰이는 기능들을 일일이 작성하지 않고, derive 속성에 해당 기능 이름을 적어주면 컴파일러가 그 구현을 대신 생성함
+
+#### impl fmt
+사람이 보기 좋게 값(객체)을 문자열로 표현하는 방법을 직접 정의
+
+#### impl From<...>
+타입 변환 규칙 정의 : impl From\<T> for U를 만들면, T를 U로 자동 변환 가능
