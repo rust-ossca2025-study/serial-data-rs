@@ -64,7 +64,7 @@ fn get_rawdata(&self) -> String {
 
 1. `kind` 에 값 할당 시도
 2. 할당 방법 결정
-3. Copy?: CustomerKind에 구현 안됌
+3. Copy?: CustomerKind에 구현 안됨
 4. Move 시도
 5. &self 뒤에 데이터는 Move 불가함
 
