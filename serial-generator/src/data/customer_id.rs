@@ -1,4 +1,4 @@
-use crate:: traits::GenSerialData;
+use crate::traits::GenSerialData;
 
 pub struct CustomerID {
     id: Option<String>,
@@ -8,7 +8,11 @@ pub struct CustomerID {
 
 impl CustomerID {
     pub fn new(digit: usize) -> Self {
-        Self { name: "UserID".to_owned(), digit, id: None }
+        Self {
+            name: "UserID".to_owned(),
+            digit,
+            id: None,
+        }
     }
 }
 

@@ -1,36 +1,36 @@
-use std::io::{stdin, stdout, Write};
-use magic_crypt::{new_magic_crypt, MagicCryptTrait};
+use magic_crypt::{MagicCryptTrait, new_magic_crypt};
+use std::io::{Write, stdin, stdout};
 
 // 사용자 입력
-fn get_user_input(prompt: &str , expected_len :usize) -> String {
-    loop{
+fn get_user_input(prompt: &str, expected_len: usize) -> String {
+    loop {
         print!("{}", prompt);
-        let _ =stdout().flush();
+        let _ = stdout().flush();
         let mut s = String::new();
         stdin().read_line(&mut s).expect("입력 오류");
         s = s.trim().to_string();
         if s.len() == expected_len {
             return s;
         } else {
-            println!("입력 길이가 {}자여야 합니다. 다시 시도하세요.", expected_len);
+            println!(
+                "입력 길이가 {}자여야 합니다. 다시 시도하세요.",
+                expected_len
+            );
         }
     }
-
 }
 
-//시리얼 생성 함수 
-fn generate_serial(customerid : &str , productid : &str)-> String{
-    format!("{}{}" ,customerid , productid)
+//시리얼 생성 함수
+fn generate_serial(customerid: &str, productid: &str) -> String {
+    format!("{}{}", customerid, productid)
 }
 
 fn main() {
-
     let customerid = get_user_input("please input 4-digits Customer ID", 4);
     let productid = get_user_input("please input 8-digits Product ID", 8);
 
     let plain_serial = generate_serial(&customerid, &productid);
     println!("Plain serial: {}", plain_serial); // 암호화 전 시리얼 출력
-
 
     let mc = new_magic_crypt!("magickey", 256); // AES256 알고리즘을 사용하는 MagicCrypt256타입의 객체 생성
     let serial = mc.encrypt_str_to_base64(&plain_serial); // 암호화 후 BASE64로 인코딩
@@ -47,15 +47,14 @@ fn main() {
 #[cfg(test)] // 테스트 
 mod tests {
     use super::*;
-    use magic_crypt::{new_magic_crypt, MagicCryptTrait};
+    use magic_crypt::{MagicCryptTrait, new_magic_crypt};
 
     #[test]
-    fn test_encrypt_decrypt(){
+    fn test_encrypt_decrypt() {
         let mc = new_magic_crypt!("magickey", 256);
         let original = "1234qwertyaa";
         let encrypted = mc.encrypt_str_to_base64(&original);
         let decrypted = mc.decrypt_base64_to_string(encrypted).unwrap();
-        assert_eq!(original,decrypted);
+        assert_eq!(original, decrypted);
     }
-
 }

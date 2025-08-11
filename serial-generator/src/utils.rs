@@ -1,7 +1,7 @@
-use std::io::{stdin, stdout, Write};
+use std::io::{Write, stdin, stdout};
 
-pub fn get_user_input() ->String{
-    let mut input  = String::new();
+pub fn get_user_input() -> String {
+    let mut input = String::new();
     stdout().flush().unwrap();
     stdin().read_line(&mut input).expect("입력 오류");
     input.trim().to_string()

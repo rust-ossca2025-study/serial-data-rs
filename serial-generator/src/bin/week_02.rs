@@ -1,9 +1,11 @@
-use magic_crypt::{new_magic_crypt, MagicCryptTrait};
+use magic_crypt::{MagicCryptTrait, new_magic_crypt};
 use serial_generator::{
-    data::{customer_id::CustomerID, product_id::ProductID , expiredate::ExpireDate , customer_kind::CustomerType},
+    data::{
+        customer_id::CustomerID, customer_kind::CustomerType, expiredate::ExpireDate,
+        product_id::ProductID,
+    },
     traits::GenSerialData,
 };
-
 
 fn collect_data(items: &mut Vec<Box<dyn GenSerialData>>) {
     for item in items.iter_mut() {
@@ -24,8 +26,13 @@ fn main() {
     let customerid = CustomerID::new(4);
     let expiredate = ExpireDate::new();
     let customertype = CustomerType::new();
-    
-    let mut items: Vec<Box<dyn GenSerialData>> = vec![Box::new(customerid), Box::new(productid) , Box::new(expiredate) , Box::new(customertype)];
+
+    let mut items: Vec<Box<dyn GenSerialData>> = vec![
+        Box::new(customerid),
+        Box::new(productid),
+        Box::new(expiredate),
+        Box::new(customertype),
+    ];
 
     collect_data(&mut items);
     let plain_serial = generate_serial(&mut items);

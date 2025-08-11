@@ -64,8 +64,8 @@ impl GenSerialData for CustomerType {
     }
 
     fn get_rawdata(&self) -> String {
-        if let Some(kind) =self.customer_type.as_ref() {
-            return  format!("{}", usize::from(kind));
+        if let Some(kind) = self.customer_type.as_ref() {
+            return format!("{}", usize::from(kind));
         } else {
             return "0".to_owned();
         }
