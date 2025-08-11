@@ -32,7 +32,7 @@ impl ProductID {
     }
 }
 
-trait GenSerialData {
+pub trait GenSerialData {
     fn get_input_from_user(&mut self) {
         println!(
             "Please input {}-digits for {}: ",
@@ -52,4 +52,40 @@ trait GenSerialData {
     fn get_rawdata(&self) -> String;
     fn get_name(&self) -> String;
     fn put_rawdata(&mut self, _data: String);
+}
+
+impl GenSerialData for CustomerID {
+    fn get_length(&mut self) -> usize {
+        self.digit
+    }
+
+    fn get_rawdata(&self) -> String {
+        self.id.clone().unwrap()
+    }
+
+    fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    fn put_rawdata(&mut self, data: String) {
+        self.id = Some(data);
+    }
+}
+
+impl GenSerialData for ProductID {
+    fn get_length(&mut self) -> usize {
+        self.digit
+    }
+
+    fn get_rawdata(&self) -> String {
+        self.id.clone().unwrap()
+    }
+
+    fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    fn put_rawdata(&mut self, data: String) {
+        self.id = Some(data);
+    }
 }
