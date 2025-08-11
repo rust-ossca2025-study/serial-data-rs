@@ -17,6 +17,16 @@ impl From<CustomerKind> for usize {
     }
 }
 
+impl From<&CustomerKind> for usize {
+    fn from(item: &CustomerKind) -> usize {
+        match item {
+            CustomerKind::Business => 1, // 개인이 구매해서 사용하는 경우
+            CustomerKind::Student => 2,  // 학생이 무료버전을 사용하는 경우
+            CustomerKind::Company => 3,  // 회사에서 단체 구매한 경우
+        }
+    }
+}
+
 pub struct CustomerType {
     customer_type: Option<CustomerKind>,
     digit: usize,
@@ -64,7 +74,7 @@ impl GenSerialData for CustomerType {
 
     fn get_rawdata(&self) -> String {
         if let Some(kind) = &self.customer_type {
-            return format!("{}", usize::from((*kind).clone()));
+            return format!("{}", usize::from((kind)));
         } else {
             return "0".to_owned();
         }

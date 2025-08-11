@@ -46,6 +46,10 @@ CustomerID와 ProductID, 2개의 입력 데이터를 만들어봤습니다. 그 
 
 ## 연습문제
 
-- get_rawdata에서 (\*kind).clone()과 같이 clone메소드를 호출하지 않도록 고쳐보세요. From트레이트 구현의 어디를 바꾸면 될지 생각해보세요.
+- get_rawdata에서 `(*kind).clone()`과 같이 clone메소드를 호출하지 않도록 고쳐보세요. From트레이트 구현의 어디를 바꾸면 될지 생각해보세요.
 
 - get_rawdata 메소드의 구현에서 if let Some(kind) = self.customer_type와 같이 소유권이 이동되도록 구현을 바꿔보세요. 어디에서 어떤 에러가 나는지 확인해보고 그 의미를 생각해보세요.
+
+# Comment
+
+- from includes into
