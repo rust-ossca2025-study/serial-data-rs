@@ -50,6 +50,139 @@ CustomerID와 ProductID, 2개의 입력 데이터를 만들어봤습니다. 그 
 
 - get_rawdata 메소드의 구현에서 if let Some(kind) = self.customer_type와 같이 소유권이 이동되도록 구현을 바꿔보세요. 어디에서 어떤 에러가 나는지 확인해보고 그 의미를 생각해보세요.
 
+### Issue
+
+1. `kind` 에 값 할당 시도
+2. 할당 방법 결정
+3. Copy?: CustomerKind에 구현 안됌
+4. Move 시도
+5. &self 뒤에 데이터는 Move 불가함
+
+### 해결책
+
+- 원래대로 & 사용
+- ref 사용
+- Copy 구현
+
 # Comment
 
-- from includes into
+## & 와 ref
+
+### & - 참조 연산자
+
+- 값에서 참조를 생성
+- 표현식에서 사용
+
+### ref - 패턴 매칭 키워드
+
+- 패턴 매칭에서 참조를 생성
+- let, match, if let 등에서 사용
+
+## from includes into
+
+- [It is the reciprocal of Into](https://doc.rust-lang.org/std/convert/trait.From.html)
+
+````rust
+struct Person {
+    name: String,
+}
+
+// From만 구현
+impl From<String> for Person {
+    fn from(name: String) -> Self {
+        Person { name }
+    }
+}
+
+fn main() {
+    let name = String::from("Alice");
+
+    // From 사용
+    let person1 = Person::from(name.clone());
+
+    // Into 자동으로 사용 가능!
+    let person2: Person = name.into();
+}
+
+### TryFrom
+- Rust 에서 Try 가 붙은 경우 Result return 타입에 대한 구현을 의미
+
+```rust
+use std::convert::TryFrom;
+
+struct PositiveNumber(u32);
+
+impl TryFrom<i32> for PositiveNumber {
+    type Error = &'static str;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        if value >= 0 {
+            Ok(PositiveNumber(value as u32))
+        } else {
+            Err("Number must be positive")
+        }
+    }
+}
+
+fn main() {
+    // TryFrom 사용
+    let pos1 = PositiveNumber::try_from(5).unwrap();
+
+    // TryInto 자동으로 사용 가능
+    let pos2: Result<PositiveNumber, _> = 10.try_into();
+}
+````
+
+## copy vs clone
+
+- Copy 는 암시적으로 데이터 복사를 자동으로 수행해줌
+- Copy 는 단순히 메모리 복사
+- Primitive 타입은 Copy 트레이트를 구현
+- Custom Type 이 Copy 구현하고 싶은 경우, 하위 모든 필드가 Copy trait 을 구현해야 함
+
+```rs
+#[derive(Copy)]
+struct SomeType {
+    a: i32,
+    b: i32,
+}
+```
+
+- Clone 은 명시적으로 데이터 복사를 수행
+- resource 소비 큼
+
+1. .clone() 메서드 호출 (함수 호출 오버헤드)
+2. 새로운 힙 메모리 할당
+3. 데이터 복사
+4. 메타데이터(길이, 용량) 설정
+
+- Custom logic 추가 가능
+
+```rs
+#[derive(Clone)]
+struct Database {
+    connections: Vec<Connection>,
+    cache: HashMap<String, Data>,
+}
+
+impl Clone for Database {
+    fn clone(&self) -> Self {
+        println!("데이터베이스 복제 시작...");
+
+        // 1. 연결 풀 새로 생성
+        let new_connections = self.connections
+            .iter()
+            .map(|conn| conn.duplicate())  // 각 연결을 새로 생성
+            .collect();
+
+        // 2. 캐시는 비우기 (성능상 이유)
+        let empty_cache = HashMap::new();
+
+        println!("데이터베이스 복제 완료");
+        Database {
+            connections: new_connections,
+            cache: empty_cache,  // 원본과 다른 상태!
+        }
+    }
+}
+```
