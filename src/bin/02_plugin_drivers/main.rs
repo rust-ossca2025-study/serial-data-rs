@@ -22,12 +22,5 @@ fn main() {
     let dec = mc.decrypt_base64_to_string(serial).unwrap(); // BASE64로 인코딩된 데이터를 디코딩 후 암호 해제
     println!("Decrypted serial: {}", dec);
 
-    let mut offset = 0;
-    for item in items.iter_mut() {
-        let len = item.get_length();
-        let rawdata = &dec[offset..offset + len];
-        println!("Verify {}: {}", item.get_name(), rawdata);
-        println!("Verify result: {}", item.verify(rawdata));
-        offset += len;
-    }
+    items.validate_serialized_data(&dec);
 }
