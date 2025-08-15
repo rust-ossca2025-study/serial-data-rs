@@ -1,0 +1,6 @@
+max_width = 100
+comment_width = 120
+use_small_heuristics = "Max"
+group_imports = "StdExternalCrate" # group std/external/crate imports separately
+imports_granularity = "Module" # module-level import grouping
+reorder_imports = true # reorder imports alphabetically
