@@ -1,8 +1,8 @@
 mod domain;
 
 use crate::domain::{
-    customer_id::CustomerID, customer_type::CustomerType, ext::GenSerialDataVecExt,
-    product_id::ProductID, traits::GenSerialData,
+    customer_id::CustomerID, customer_type::CustomerType, expire_date::ExpireDate,
+    ext::GenSerialDataVecExt, product_id::ProductID, traits::GenSerialData,
 };
 use magic_crypt::{MagicCryptTrait, new_magic_crypt};
 
@@ -10,9 +10,14 @@ fn main() {
     let productid = ProductID::new(8);
     let customerid = CustomerID::new(4);
     let customer_type = CustomerType::new();
+    let expire_date = ExpireDate::new();
 
-    let mut items: Vec<Box<dyn GenSerialData>> =
-        vec![Box::new(customerid), Box::new(productid), Box::new(customer_type)];
+    let mut items: Vec<Box<dyn GenSerialData>> = vec![
+        Box::new(customerid),
+        Box::new(productid),
+        Box::new(customer_type),
+        Box::new(expire_date),
+    ];
 
     items.collect_data();
     let plain_serial = items.generate_serial();
