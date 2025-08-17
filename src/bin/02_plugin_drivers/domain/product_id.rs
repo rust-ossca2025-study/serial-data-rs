@@ -8,11 +8,7 @@ pub struct ProductID {
 
 impl ProductID {
     pub fn new(digit: usize) -> Self {
-        ProductID {
-            name: "ProductID".to_owned(),
-            digit,
-            id: None,
-        }
+        ProductID { name: "ProductID".to_owned(), digit, id: None }
     }
 }
 
