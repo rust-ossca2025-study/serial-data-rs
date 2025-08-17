@@ -1,9 +1,11 @@
 use crate::{
-    data::{CustomerID, CustomerType, ExpireDate, GenSerialData, ProductID},
+    data::GenSerialData,
+    domain::{CustomerID, CustomerType, ExpireDate, ProductID},
     encrypt::{decrypt_serial, encrypt_serial},
 };
 
 mod data;
+mod domain;
 mod encrypt;
 mod input;
 
